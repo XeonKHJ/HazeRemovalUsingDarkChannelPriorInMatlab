@@ -1,0 +1,33 @@
+function result = hazeRemoveUsingDarkChannel(f)
+
+w = 0.95;
+patchSize = [15 15];
+
+rf = f(:,:,1);
+gf = f(:,:,2);
+bf = f(:,:,3);
+
+IAInput(:,:,1) = rf./sum(sum(Ar));
+IAInput(:,:,2) = gf./sum(sum(Ag));
+IAInput(:,:,3) = bf./sum(sum(Ab));
+
+minIA = darkChannelFilter(patchSize, IAInput);
+
+A = estimateAtmosphericLight(f, patchSize);
+
+
+
+Amask = A > 0;
+Ar[Amask] = 
+
+
+%估计t
+t = 1 - w * minIA;
+t = single(t);
+zerotMask = (t < 0.1);
+t(zerotMask) = 0.1;
+
+%还原图像
+J = (f - A)./(max(t, 0.1)) + A;
+
+result = J;
