@@ -1,7 +1,7 @@
 function result = hazeRemoveUsingDarkChannel(f)
 
 w = 0.95;
-patchSize = [3 3];
+patchSize = [15 15];
 
 rf = single(f(:,:,1));
 gf = single(f(:,:,2));
