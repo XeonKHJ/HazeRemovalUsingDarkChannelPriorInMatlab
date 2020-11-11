@@ -1,9 +1,9 @@
-function result = hazeRemoveUsingDarkChannel(f)
+function result = hazeRemoveUsingDarkMedian(f)
 
 fi = f;
 f = im2single(f);
 w = 0.95;
-patchSize = [15 15];
+patchSize = [7 7];
 
 rf = f(:,:,1);
 gf = f(:,:,2);
@@ -23,7 +23,7 @@ fcopy(:,:,2) = gf / sumAg;
 fcopy(:,:,3) = bf / sumAb;
 
 %估计t
-IADarkChannel = darkChannelFilter(patchSize, fcopy, 'single');
+IADarkChannel = medianFilterDehazeChannel(fcopy, patchSize, [7 7]);
 t = 1-w* single(IADarkChannel);
 tMask = t < 0.1;
 t(tMask) = 0.1;
