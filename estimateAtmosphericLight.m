@@ -1,4 +1,4 @@
-function A = estimateAtmosphericLight(f, filterSize)
+function [A, darkChannel] = estimateAtmosphericLight(f, filterSize)
 
 darkChannel = darkChannelFilter(filterSize, f, 'uint8');
 numOfPixels = size(f,1) * size(f,2);
