@@ -3,7 +3,7 @@ function result = hazeRemoveUsingDarkMedian(f)
 fi = f;
 f = im2single(f);
 w = 0.95;
-patchSize = [7 7];
+patchSize = [15 15];
 
 rf = f(:,:,1);
 gf = f(:,:,2);
@@ -23,17 +23,17 @@ fcopy(:,:,2) = gf / sumAg;
 fcopy(:,:,3) = bf / sumAb;
 
 %估计t
-IADarkChannel = medianFilterDehazeChannel(fcopy, patchSize, [7 7]);
-t = 1-w* single(IADarkChannel);
-tMask = t < 0.1;
-t(tMask) = 0.1;
+IADarkChannel = medianFilterDehazeChannel(fcopy, patchSize, [41 41]);
+% t = 1-w* single(IADarkChannel);
+% tMask = t < 0.1;
+% t(tMask) = 0.1;
+% 
+% Afull = zeros(size(f));
+% Afull(:,:,1) = sumAr;
+% Afull(:,:,2) = sumAg;
+% Afull(:,:,3) = sumAb; 
+% 
+% %还原图像
+% J = (single(f) - single(Afull))./t + Afull;
 
-Afull = zeros(size(f));
-Afull(:,:,1) = sumAr;
-Afull(:,:,2) = sumAg;
-Afull(:,:,3) = sumAb; 
-
-%还原图像
-J = (single(f) - single(Afull))./t + Afull;
-
-result = im2uint8(J);
+result = im2uint8(IADarkChannel);

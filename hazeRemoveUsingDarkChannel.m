@@ -1,9 +1,12 @@
-function result = hazeRemoveUsingDarkChannel(f)
+function result = hazeRemoveUsingDarkChannel(f, patchSize)
+
+% patchsize在第一次时用的是15×15
+% 改成3×3可以试看看though
 
 fi = f;
 f = im2single(f);
 w = 0.95;
-patchSize = [15 15];
+%patchSize = [15 15];
 
 rf = f(:,:,1);
 gf = f(:,:,2);
@@ -24,6 +27,9 @@ fcopy(:,:,3) = bf / sumAb;
 
 %估计t
 IADarkChannel = darkChannelFilter(patchSize, fcopy, 'single');
+
+%figure;imshow(IADarkChannel);
+
 t = 1-w* single(IADarkChannel);
 tMask = t < 0.1;
 t(tMask) = 0.1;
@@ -33,7 +39,19 @@ Afull(:,:,1) = sumAr;
 Afull(:,:,2) = sumAg;
 Afull(:,:,3) = sumAb; 
 
+%transmission2=imguidedfilter(transmission,guided_image,'NeighborhoodSize',[30,30]);
+
 %还原图像
 J = (single(f) - single(Afull))./t + Afull;
+%figure;
+%imshow(J);
+lightBorders = SomethingNew(J(:, :, 1), J(:, :, 2), J(:, :, 3), 10);
+lightBorders = IADarkChannel .* lightBorders;
+%figure;
+%imshow(J - lightBorders);
+originalLightBorders = SomethingNew(f(:, :, 1), f(:, :, 2), f(:, :, 3), 10);
+%figure;
+%imshow(originalLightBorders);
+
 
 result = im2uint8(J);
