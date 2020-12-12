@@ -19,7 +19,7 @@ A=mean(I(a,b,:));
 transmission=1 - w0 * dark_channel ./ A;
 guided_image=I(:,:,1);
 %引导滤波Matlab R2014a能直接调用了，对初始透射率进行引导滤波
-transmission2=imguidedfilter(transmission,guided_image,'NeighborhoodSize',[30,30]);
+transmission2=imguidedfilter(transmission,guided_image,'NeighborhoodSize',[3,3]);
 t0=0.1;
 t=max(transmission2,t0);
 for l = 1:c

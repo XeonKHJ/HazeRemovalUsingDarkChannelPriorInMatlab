@@ -3,14 +3,15 @@ function result = hazeRemoveUsingDarkChannel(f, patchSize)
 % patchsize在第一次时用的是15×15
 % 改成3×3可以试看看though
 
-fi = f;
+fi = imresize(f, 0.5);
 f = im2single(f);
+fs = imresize(f,0.5); %用来取代以下要重新调整大小的f
 w = 0.95;
 %patchSize = [15 15];
 
-rf = f(:,:,1);
-gf = f(:,:,2);
-bf = f(:,:,3);
+rf = fs(:,:,1);
+gf = fs(:,:,2);
+bf = fs(:,:,3);
 
 A = estimateAtmosphericLight(fi, patchSize);
 A = im2single(A);
@@ -20,17 +21,19 @@ sumAr = sum(sum(rf(Amask))) / sum(sum(Amask));
 sumAg = sum(sum(gf(Amask))) / sum(sum(Amask));
 sumAb = sum(sum(bf(Amask))) / sum(sum(Amask));
 
-fcopy = f(:,:,:);
+fcopy = fs(:,:,:);
 fcopy(:, :, 1) = rf / sumAr;
 fcopy(:,:,2) = gf / sumAg;
 fcopy(:,:,3) = bf / sumAb;
 
+%imresize(fcopy, 0.5);
 %估计t
 IADarkChannel = darkChannelFilter(patchSize, fcopy, 'single');
-
+IADarkChannel = imresize(IADarkChannel, [size(f, 1) size(f,2)]);
 %figure;imshow(IADarkChannel);
 
 t = 1-w* single(IADarkChannel);
+t=imguidedfilter(t,im2gray(f),'NeighborhoodSize',patchSize);
 tMask = t < 0.1;
 t(tMask) = 0.1;
 
@@ -43,15 +46,15 @@ Afull(:,:,3) = sumAb;
 
 %还原图像
 J = (single(f) - single(Afull))./t + Afull;
-%figure;
-%imshow(J);
-lightBorders = SomethingNew(J(:, :, 1), J(:, :, 2), J(:, :, 3), 10);
-lightBorders = IADarkChannel .* lightBorders;
-%figure;
-%imshow(J - lightBorders);
-originalLightBorders = SomethingNew(f(:, :, 1), f(:, :, 2), f(:, :, 3), 10);
-%figure;
-%imshow(originalLightBorders);
+% %figure;
+% %imshow(J);
+% lightBorders = SomethingNew(J(:, :, 1), J(:, :, 2), J(:, :, 3), 10);
+% lightBorders = IADarkChannel .* lightBorders;
+% %figure;
+% %imshow(J - lightBorders);
+% originalLightBorders = SomethingNew(f(:, :, 1), f(:, :, 2), f(:, :, 3), 10);
+% %figure;
+% %imshow(originalLightBorders);
 
 
 result = im2uint8(J);
