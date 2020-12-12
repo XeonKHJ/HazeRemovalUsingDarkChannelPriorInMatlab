@@ -2,10 +2,10 @@ function result = hazeRemoveUsingDarkChannel(f, patchSize)
 
 % patchsize在第一次时用的是15×15
 % 改成3×3可以试看看though
-
-fi = imresize(f, 0.15);
+tic;
+fi = imresize(f, 0.5);
 f = im2single(f);
-fs = imresize(f,0.15); %用来取代以下要重新调整大小的f
+fs = imresize(f,0.5); %用来取代以下要重新调整大小的f
 w = 0.95;
 %patchSize = [15 15];
 
@@ -13,8 +13,10 @@ rf = fs(:,:,1);
 gf = fs(:,:,2);
 bf = fs(:,:,3);
 
+
 [A, darkChannel] = estimateAtmosphericLight(fi, patchSize);
 A = im2single(A);
+
 
 Amask = A > 0;
 sumAr = sum(sum(rf(Amask))) / sum(sum(Amask));
@@ -33,7 +35,9 @@ IADarkChannel = imresize(IADarkChannel, [size(f, 1) size(f,2)]);
 %figure;imshow(IADarkChannel);
 
 t = 1-w* single(IADarkChannel);
-t=imguidedfilter(t,im2gray(f),'NeighborhoodSize',[size(fi, 1) size(fi, 2)]);
+
+t=imguidedfilter(t,im2gray(f),'NeighborhoodSize',[301 301]);
+
 tMask = t < 0.1;
 t(tMask) = 0.1;
 
@@ -55,6 +59,6 @@ J = (single(f) - single(Afull))./t + Afull;
 % originalLightBorders = SomethingNew(f(:, :, 1), f(:, :, 2), f(:, :, 3), 10);
 % %figure;
 % %imshow(originalLightBorders);
-
+toc
 
 result = im2uint8(J);
